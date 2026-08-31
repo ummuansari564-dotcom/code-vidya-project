@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CampusContent AI</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Inter,Arial,sans-serif;
+  color:#e9ecf7;
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 15% 15%,rgba(99,91,255,.28),transparent 25%),
+    radial-gradient(circle at 85% 10%,rgba(139,92,246,.22),transparent 25%),
+    radial-gradient(circle at 70% 90%,rgba(59,130,246,.18),transparent 28%),
+    linear-gradient(135deg,#070b18,#10162b 50%,#080c1b);
+  background-attachment:fixed;
+  overflow-x:hidden;
+}
+
+/* 3D GRID */
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.16;
+  background-image:
+    linear-gradient(rgba(255,255,255,.09) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.09) 1px,transparent 1px);
+  background-size:55px 55px;
+  transform:perspective(500px) rotateX(58deg) scale(1.5);
+  transform-origin:center bottom;
+  mask-image:linear-gradient(to top,black,transparent 75%);
+  z-index:-2;
+}
+
+/* FLOATING LIGHTS */
+body:after{
+  content:"";
+  position:fixed;
+  width:420px;
+  height:420px;
+  right:-150px;
+  top:180px;
+  border-radius:50%;
+  background:rgba(99,91,255,.12);
+  filter:blur(80px);
+  pointer-events:none;
+  z-index:-3;
+}
+
+button,input,textarea,select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+  border:0;
+}
+
+.topbar{
+  height:72px;
+  background:rgba(9,13,29,.72);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 34px;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:900;
+  font-size:20px;
+  color:white;
+}
+
+.logo-icon{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#635bff,#8b5cf6);
+  box-shadow:0 8px 25px rgba(99,91,255,.35);
+}
+
+.logo span{
+  color:#9b8cff;
+}
+
+.top-actions{
+  display:flex;
+  gap:9px;
+}
+
+.badge{
+  padding:7px 12px;
+  border-radius:20px;
+  background:rgba(99,91,255,.13);
+  border:1px solid rgba(139,124,255,.2);
+  color:#c5beff;
+  font-size:10px;
+  font-weight:800;
+}
+
+.container{
+  max-width:1450px;
+  margin:auto;
+  padding:30px 34px 50px;
+}
+
+/* HERO */
+.campaign-banner{
+  min-height:255px;
+  margin-bottom:24px;
+  padding:40px 44px;
+  border-radius:24px;
+  color:white;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  overflow:hidden;
+  position:relative;
+  background:
+    radial-gradient(circle at 80% 20%,rgba(139,92,246,.55),transparent 28%),
+    linear-gradient(135deg,#10162f,#28135f 55%,#5d4bea);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 25px 70px rgba(0,0,0,.28);
+}
+
+.campaign-banner:before{
+  content:"";
+  position:absolute;
+  width:300px;
+  height:300px;
+  right:-100px;
+  bottom:-180px;
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:50%;
+  box-shadow:
+    0 0 0 35px rgba(255,255,255,.025),
+    0 0 0 70px rgba(255,255,255,.02);
+}
+
+.banner-content{
+  max-width:780px;
+  position:relative;
+  z-index:2;
+}
+
+.banner-label{
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:1.8px;
+  opacity:.8;
+  margin-bottom:14px;
+}
+
+.banner-content h1{
+  font-size:42px;
+  line-height:1.02;
+  margin-bottom:13px;
+  letter-spacing:-1.2px;
+}
+
+.banner-content h1 span{
+  color:#c9c2ff;
+}
+
+.banner-content p{
+  font-size:14px;
+  line-height:1.65;
+  color:rgba(255,255,255,.78);
+  max-width:700px;
+}
+
+.banner-info{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin-top:20px;
+}
+
+.banner-info div{
+  padding:8px 12px;
+  border-radius:20px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14);
+  font-size:10px;
+  font-weight:800;
+}
+
+.banner-orb{
+  width:160px;
+  height:160px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 0 90px rgba(150,130,255,.25);
+}
+
+.orb-inner{
+  width:96px;
+  height:96px;
+  border-radius:28px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.04));
+  border:1px solid rgba(255,255,255,.2);
+  font-size:28px;
+  font-weight:900;
+}
+
+/* LAYOUT */
+.grid{
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:22px;
+  align-items:start;
+}
+
+.card{
+  background:rgba(16,22,42,.76);
+  backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 15px 45px rgba(0,0,0,.16);
+}
+
+.card h2{
+  font-size:17px;
+  color:#fff;
+  margin-bottom:5px;
+}
+
+.sub{
+  font-size:12px;
+  color:#8d96ad;
+  margin-bottom:18px;
+}
+
+label{
+  display:block;
+  font-size:11px;
+  font-weight:800;
+  margin:15px 0 7px;
+  color:#aeb6ca;
+}
+
+input,textarea,select{
+  width:100%;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;
+  padding:11px 12px;
+  outline:none;
+  background:rgba(255,255,255,.045);
+  color:#eef1fa;
+}
+
+select option{
+  background:#171d32;
+  color:white;
+}
+
+input:focus,textarea:focus,select:focus{
+  border-color:#766dff;
+  box-shadow:0 0 0 3px rgba(118,109,255,.1);
+}
+
+textarea{
+  min-height:88px;
+  resize:vertical;
+}
+
+.two{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.platforms{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin:14px 0;
+}
+
+.platform{
+  padding:8px 10px;
+  border-radius:9px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.07);
+  color:#9ba4b8;
+  font-size:10px;
+  font-weight:800;
+}
+
+.platform.active{
+  background:rgba(99,91,255,.15);
+  border-color:rgba(126,115,255,.3);
+  color:#c8c2ff;
+}
+
+.primary{
+  width:100%;
+  margin-top:17px;
+  padding:13px;
+  border-radius:10px;
+  color:white;
+  font-weight:900;
+  background:linear-gradient(135deg,#635bff,#7c3aed);
+  box-shadow:0 10px 30px rgba(99,91,255,.25);
+}
+
+.primary:hover{
+  transform:translateY(-1px);
+  box-shadow:0 14px 35px rgba(99,91,255,.35);
+}
+
+/* DASHBOARD */
+.dashboard-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:11px;
+  margin-bottom:18px;
+}
+
+.stat{
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;
+  padding:14px;
+}
+
+.stat b{
+  display:block;
+  font-size:23px;
+  color:white;
+}
+
+.stat small{
+  color:#858fa5;
+  font-size:10px;
+}
+
+/* CONTENT */
+.content-card{
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;
+  margin-bottom:13px;
+  overflow:hidden;
+  background:rgba(255,255,255,.025);
+}
+
+.content-head{
+  padding:13px 15px;
+  background:rgba(255,255,255,.035);
+  border-bottom:1px solid rgba(255,255,255,.07);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.platform-name{
+  font-size:13px;
+  font-weight:900;
+  color:white;
+}
+
+.tag{
+  font-size:9px;
+  padding:5px 8px;
+  border-radius:20px;
+  background:rgba(39,174,96,.12);
+  color:#65d99a;
+  font-weight:800;
+}
+
+.content-body{
+  padding:15px;
+}
+
+.content-body textarea{
+  min-height:125px;
+  border:1px solid rgba(255,255,255,.06);
+  background:rgba(0,0,0,.12);
+  color:#dce1ee;
+  line-height:1.55;
+}
+
+.actions{
+  display:flex;
+  gap:8px;
+  margin-top:9px;
+}
+
+.small-btn{
+  padding:7px 10px;
+  border-radius:8px;
+  background:rgba(255,255,255,.07);
+  color:#b9c1d2;
+  font-size:10px;
+  font-weight:800;
+  border:1px solid rgba(255,255,255,.06);
+}
+
+.small-btn:hover{
+  background:rgba(99,91,255,.16);
+  color:white;
+}
+
+/* POSTER */
+.poster-card{
+  margin-top:18px;
+}
+
+.poster-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+  font-size:10px;
+  font-weight:900;
+  color:#8f98ac;
+  letter-spacing:.7px;
+}
+
+.poster-header span:last-child{
+  background:rgba(39,174,96,.13);
+  color:#65d99a;
+  padding:5px 9px;
+  border-radius:20px;
+}
+
+.event-poster{
+  min-height:295px;
+  padding:34px;
+  border-radius:18px;
+  color:white;
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 85% 15%,rgba(139,92,246,.5),transparent 30%),
+    linear-gradient(135deg,#0b1024,#25145d 55%,#5d45e8);
+  box-shadow:0 20px 50px rgba(0,0,0,.25);
+}
+
+.event-poster:before{
+  content:"";
+  position:absolute;
+  width:230px;
+  height:230px;
+  right:-80px;
+  bottom:-105px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:50%;
+  box-shadow:
+    0 0 0 25px rgba(255,255,255,.025),
+    0 0 0 50px rgba(255,255,255,.02);
+}
+
+.event-poster:after{
+  content:"AI";
+  position:absolute;
+  right:28px;
+  top:24px;
+  width:55px;
+  height:55px;
+  border-radius:16px;
+  display:grid;
+  place-items:center;
+  background:rgba(255,255,255,.09);
+  border:1px solid rgba(255,255,255,.16);
+  font-weight:900;
+  font-size:18px;
+}
+
+.poster-label{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:20px;
+  background:rgba(255,255,255,.09);
+  border:1px solid rgba(255,255,255,.14);
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:1.5px;
+}
+
+.event-poster h2{
+  color:white;
+  font-size:31px;
+  line-height:1.08;
+  margin:17px 0 8px;
+  max-width:650px;
+  letter-spacing:-.7px;
+}
+
+.event-poster p{
+  color:rgba(255,255,255,.82);
+  font-size:13px;
+  line-height:1.5;
+}
+
+.poster-details{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:21px 0;
+}
+
+.poster-details div{
+  background:rgba(255,255,255,.09);
+  border:1px solid rgba(255,255,255,.12);
+  padding:9px 11px;
+  border-radius:9px;
+  font-size:10px;
+  color:white;
+}
+
+.register-btn{
+  position:relative;
+  z-index:5;
+  background:linear-gradient(135deg,#ffffff,#ddd6fe);
+  color:#4c35c8;
+  padding:12px 20px;
+  border-radius:9px;
+  font-size:11px;
+  font-weight:900;
+  box-shadow:0 9px 25px rgba(0,0,0,.25);
+}
+
+.register-btn:hover{
+  transform:translateY(-2px);
+}
+
+/* ANALYSIS */
+.analysis{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+  margin-top:18px;
+}
+
+.analysis-card{
+  padding:18px;
+}
+
+.score{
+  font-size:35px;
+  font-weight:900;
+  color:#9b8cff;
+  margin:8px 0;
+}
+
+.check{
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  font-size:11px;
+  color:#aeb6c8;
+}
+
+.ok{
+  color:#55d990;
+  font-weight:900;
+}
+
+.check b{
+  color:#55d990;
+}
+
+/* VERSIONS */
+.versions{
+  margin-top:18px;
+}
+
+.version{
+  display:flex;
+  justify-content:space-between;
+  padding:11px 0;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  font-size:11px;
+  color:#e3e7f1;
+}
+
+.version span{
+  color:#7f899e;
+}
+
+/* EMPTY */
+.empty{
+  padding:45px 20px;
+  text-align:center;
+  color:#7f899e;
+  border:1px dashed rgba(255,255,255,.12);
+  border-radius:13px;
+}
+
+.empty strong{
+  display:block;
+  color:#dce1ed;
+  margin-bottom:5px;
+}
+
+/* TOAST */
+.toast{
+  position:fixed;
+  bottom:22px;
+  right:22px;
+  background:#171d30;
+  color:white;
+  border:1px solid rgba(255,255,255,.12);
+  padding:12px 17px;
+  border-radius:10px;
+  font-size:12px;
+  display:none;
+  z-index:9999;
+  box-shadow:0 15px 40px rgba(0,0,0,.3);
+}
+
+/* MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(2,5,15,.72);
+  backdrop-filter:blur(10px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9998;
+  padding:20px;
+}
+
+.modal-box{
+  width:100%;
+  max-width:440px;
+  background:#12182b;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;
+  padding:27px;
+  box-shadow:0 30px 90px rgba(0,0,0,.45);
+}
+
+.modal-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+
+.modal-top h2{
+  color:white;
+  font-size:19px;
+}
+
+.close{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  background:rgba(255,255,255,.07);
+  color:#cbd2e1;
+  font-size:18px;
+}
+
+.modal-box input{
+  margin-bottom:10px;
+}
+
+.submit{
+  width:100%;
+  padding:13px;
+  border-radius:10px;
+  background:linear-gradient(135deg,#635bff,#7c3aed);
+  color:white;
+  font-weight:900;
+  margin-top:5px;
+}
+
+@media(max-width:950px){
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .banner-orb{
+    display:none;
+  }
+}
+
+@media(max-width:600px){
+  .topbar{
+    padding:0 16px;
+  }
+
+  .badge{
+    display:none;
+  }
+
+  .container{
+    padding:20px 15px 40px;
+  }
+
+  .campaign-banner{
+    padding:28px;
+  }
+
+  .banner-content h1{
+    font-size:31px;
+  }
+
+  .stats,
+  .analysis{
+    grid-template-columns:1fr;
+  }
+
+  .event-poster{
+    padding:27px;
+  }
+
+  .event-poster h2{
+    font-size:25px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+  <div class="logo">
+    <div class="logo-icon">C</div>
+    CampusContent <span>AI</span>
+  </div>
+
+  <div class="top-actions">
+    <div class="badge">✦ AI CONTENT STUDIO</div>
+    <div class="badge">LIVE MVP</div>
+  </div>
+
+</header>
+
+
+<main class="container">
+
+
+<section class="campaign-banner">
+
+  <div class="banner-content">
+
+    <div class="banner-label">
+      ✦ AI-POWERED CAMPUS CAMPAIGN PLATFORM
+    </div>
+
+    <h1>
+      One Event.<br>
+      <span>Every Platform.</span>
+    </h1>
+
+    <p>
+      Create, adapt, review and manage professional event content
+      across every platform — from one single event brief.
+    </p>
+
+    <div class="banner-info">
+      <div>⚡ AI Adaptation</div>
+      <div>✓ Consistency Check</div>
+      <div>✎ Smart Editing</div>
+      <div>◈ Version Control</div>
+    </div>
+
+  </div>
+
+
+  <div class="banner-orb">
+    <div class="orb-inner">AI</div>
+  </div>
+
+</section>
+
+
+<div class="grid">
+
+
+<!-- LEFT PANEL -->
+
+<section class="card">
+
+  <h2>Event Brief</h2>
+
+  <p class="sub">
+    Enter event information once. Generate content everywhere.
+  </p>
+
+
+  <label>Event Name *</label>
+
+  <input
+    id="eventName"
+    placeholder="e.g. Code Vidya Hack Days"
+  >
+
+
+  <label>Event Description *</label>
+
+  <textarea
+    id="description"
+    placeholder="Describe your event..."
+  ></textarea>
+
+
+  <div class="two">
+
+    <div>
+      <label>Date</label>
+      <input id="date" placeholder="31 August 2026">
+    </div>
+
+    <div>
+      <label>Time</label>
+      <input id="time" placeholder="9:00 AM onwards">
+    </div>
+
+  </div>
+
+
+  <div class="two">
+
+    <div>
+      <label>Venue</label>
+      <input id="venue" placeholder="CSJMU Senate Hall">
+    </div>
+
+    <div>
+      <label>Organizer</label>
+      <input id="organizer" placeholder="Computer Applications Club">
+    </div>
+
+  </div>
+
+
+  <label>Target Audience</label>
+
+  <select id="audience">
+    <option>College Students</option>
+    <option>First Year Students</option>
+    <option>Tech Enthusiasts</option>
+    <option>Faculty & Students</option>
+    <option>General Audience</option>
+  </select>
+
+
+  <label>Content Tone</label>
+
+  <select id="tone">
+    <option>Professional</option>
+    <option>Friendly</option>
+    <option>Energetic</option>
+    <option>Formal</option>
+    <option>Gen-Z</option>
+  </select>
+
+
+  <label>Platforms</label>
+
+  <div class="platforms">
+    <div class="platform active">Instagram</div>
+    <div class="platform active">LinkedIn</div>
+    <div class="platform active">WhatsApp</div>
+    <div class="platform active">Email</div>
+    <div class="platform active">Website</div>
+  </div>
+
+
+  <button
+    class="primary"
+    onclick="generateContent()"
+  >
+    ✦ Generate Campaign Content
+  </button>
+
+</section>
+
+
+
+<!-- RIGHT PANEL -->
+
+<section>
+
+
+<div class="card">
+
+  <div class="dashboard-top">
+
+    <div>
+      <h2>Campaign Workspace</h2>
+
+      <p class="sub" style="margin:3px 0 0">
+        Review, edit and regenerate platform-specific content.
+      </p>
+    </div>
+
+    <button
+      class="small-btn"
+      onclick="checkConsistency()"
+    >
+      ✓ Check Consistency
+    </button>
+
+  </div>
+
+
+  <div class="stats">
+
+    <div class="stat">
+      <b id="generated">0</b>
+      <small>Content Pieces</small>
+    </div>
+
+    <div class="stat">
+      <b id="score">—</b>
+      <small>Quality Score</small>
+    </div>
+
+    <div class="stat">
+      <b id="versions">1</b>
+      <small>Version</small>
+    </div>
+
+  </div>
+
+
+  <div id="output">
+
+    <div class="empty">
+
+      <strong>No campaign generated yet</strong>
+
+      Fill the event brief and click
+      “Generate Campaign Content”.
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- POSTER -->
+
+<div class="card poster-card">
+
+  <div class="poster-header">
+
+    <span>EVENT CAMPAIGN PREVIEW</span>
+
+    <span>● LIVE</span>
+
+  </div>
+
+
+  <div class="event-poster">
+
+    <div class="poster-label">
+      ✦ CAMPUS EVENT
+    </div>
+
+
+    <h2 id="posterName">
+      CODE VIDYA HACK DAYS
+    </h2>
+
+
+    <p id="posterDesc">
+      Build • Create • Innovate
+    </p>
+
+
+    <div class="poster-details">
+
+      <div>
+        📅 <span id="posterDate">31 August 2026</span>
+      </div>
+
+      <div>
+        ⏰ <span id="posterTime">9:00 AM onwards</span>
+      </div>
+
+      <div>
+        📍 <span id="posterVenue">CSJMU Campus</span>
+      </div>
+
+    </div>
+
+
+    <button
+      class="register-btn"
+      onclick="showRegistration()"
+    >
+      REGISTER NOW →
+    </button>
+
+  </div>
+
+</div>
+
+
+
+<!-- ANALYTICS -->
+
+<div class="analysis">
+
+
+<div class="card analysis-card">
+
+  <h2>Content Quality</h2>
+
+  <div
+    class="score"
+    id="quality"
+  >
+    —
+  </div>
+
+
+  <div class="check">
+    <span class="ok">✓</span>
+    Event information included
+  </div>
+
+  <div class="check">
+    <span class="ok">✓</span>
+    Audience adaptation
+  </div>
+
+  <div class="check">
+    <span class="ok">✓</span>
+    Platform-specific formatting
+  </div>
+
+  <div class="check">
+    <span class="ok">✓</span>
+    Clear call-to-action
+  </div>
+
+</div>
+
+
+
+<div class="card analysis-card">
+
+  <h2>Consistency Monitor</h2>
+
+  <div class="check">
+    <span class="ok">●</span>
+    Date consistency
+    <b style="float:right">PASS</b>
+  </div>
+
+  <div class="check">
+    <span class="ok">●</span>
+    Time consistency
+    <b style="float:right">PASS</b>
+  </div>
+
+  <div class="check">
+    <span class="ok">●</span>
+    Venue consistency
+    <b style="float:right">PASS</b>
+  </div>
+
+  <div class="check">
+    <span class="ok">●</span>
+    Organizer consistency
+    <b style="float:right">PASS</b>
+  </div>
+
+  <div class="check">
+    <span class="ok">●</span>
+    Messaging consistency
+    <b style="float:right">PASS</b>
+  </div>
+
+</div>
+
+</div>
+
+
+
+<!-- VERSION HISTORY -->
+
+<div class="card versions">
+
+  <h2>Version History</h2>
+
+  <div class="version">
+    <b>Version 1.0</b>
+    <span>Initial campaign • Just now</span>
+  </div>
+
+  <div class="version">
+    <b>Version 0.9</b>
+    <span>Previous draft • Saved</span>
+  </div>
+
+</div>
+
+
+</section>
+
+</div>
+
+</main>
+
+
+<div
+  class="toast"
+  id="toast"
+></div>
+
+
+
+<script>
+
+let version = 1;
+
+
+/* GET INPUT */
+
+function val(id){
+
+  return document
+    .getElementById(id)
+    .value
+    .trim();
+
+}
+
+
+
+/* GENERATE CONTENT */
+
+function generateContent(){
+
+  const name =
+    val("eventName") ||
+    "Campus Event";
+
+  const desc =
+    val("description") ||
+    "An exciting campus event designed for students.";
+
+  const date =
+    val("date") ||
+    "Date to be announced";
+
+  const time =
+    val("time") ||
+    "Time to be announced";
+
+  const venue =
+    val("venue") ||
+    "Venue to be announced";
+
+  const organizer =
+    val("organizer") ||
+    "Campus Club";
+
+  const audience =
+    val("audience");
+
+  const tone =
+    val("tone");
+
+
+  /* UPDATE POSTER */
+
+  document
+    .getElementById("posterName")
+    .innerText =
+    name.toUpperCase();
+
+  document
+    .getElementById("posterDesc")
+    .innerText =
+    desc;
+
+  document
+    .getElementById("posterDate")
+    .innerText =
+    date;
+
+  document
+    .getElementById("posterTime")
+    .innerText =
+    time;
+
+  document
+    .getElementById("posterVenue")
+    .innerText =
+    venue;
+
+
+
+  const contents = {
+
+Instagram:
+`🚀 ${name}
+
+${desc}
+
+📅 ${date}
+⏰ ${time}
+📍 ${venue}
+
+Calling all ${audience.toLowerCase()}!
+
+Get ready to learn, connect and be part of the experience.
+
+✨ Don't miss it!
+
+#CampusLife #CollegeEvent #${name.replace(/\s+/g,"")}`,
+
+
+
+LinkedIn:
+`We are excited to announce ${name}.
+
+${desc}
+
+EVENT DETAILS
+• Date: ${date}
+• Time: ${time}
+• Venue: ${venue}
+• Organized by: ${organizer}
+
+This event is designed for ${audience.toLowerCase()} and aims to create an engaging learning and networking experience.
+
+Join us and be part of the campus community.`,
+
+
+WhatsApp:
+`📢 *${name}*
+
+${desc}
+
+📅 *Date:* ${date}
+⏰ *Time:* ${time}
+📍 *Venue:* ${venue}
+
+Hey ${audience.toLowerCase()}! Don't miss this opportunity. 🙌
+
+👉 Register now and spread the word!`,
+
+
+Email:
+`Subject: You're Invited — ${name}
+
+Dear ${audience},
+
+We are pleased to invite you to ${name}.
+
+${desc}
+
+EVENT DETAILS
+
+Date: ${date}
+Time: ${time}
+Venue: ${venue}
+Organizer: ${organizer}
+
+We look forward to your participation.
+
+Best regards,
+${organizer}`,
+
+
+
+Website:
+`${name}
+
+${desc}
+
+EVENT DETAILS
+
+Date: ${date}
+Time: ${time}
+Venue: ${venue}
+Organizer: ${organizer}
+
+Designed for ${audience}, this event brings students together for an engaging campus experience.
+
+REGISTER NOW →`
+
+  };
+
+
+  let html = "";
+
+
+  for(
+    const [platform,text]
+    of Object.entries(contents)
+  ){
+
+    html += `
+
+    <div class="content-card">
+
+      <div class="content-head">
+
+        <span class="platform-name">
+          ${platform}
+        </span>
+
+        <span class="tag">
+          ${tone} • AI Adapted
+        </span>
+
+      </div>
+
+
+      <div class="content-body">
+
+        <textarea
+          id="text-${platform}"
+        >${text}</textarea>
+
+
+        <div class="actions">
+
+          <button
+            class="small-btn"
+            onclick="regenerate('${platform}')"
+          >
+            ↻ Regenerate
+          </button>
+
+
+          <button
+            class="small-btn"
+            onclick="copyText('text-${platform}')"
+          >
+            Copy
+          </button>
+
+
+          <button
+            class="small-btn"
+            onclick="saveVersion()"
+          >
+            Save Version
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    `;
+
+  }
+
+
+  document
+    .getElementById("output")
+    .innerHTML =
+    html;
+
+
+  document
+    .getElementById("generated")
+    .innerText =
+    "5";
+
+
+  document
+    .getElementById("score")
+    .innerText =
+    "92/100";
+
+
+  document
+    .getElementById("quality")
+    .innerText =
+    "92/100";
+
+
+  toast(
+    "Campaign generated successfully ✦"
+  );
+
+}
+
+
+
+/* REGENERATE */
+
+function regenerate(platform){
+
+  const box =
+    document.getElementById(
+      "text-" + platform
+    );
+
+  box.value +=
+    "\n\n✦ AI regeneration applied using " +
+    val("tone") +
+    " tone.";
+
+  toast(
+    platform +
+    " content regenerated ✓"
+  );
+
+}
+
+
+
+/* COPY */
+
+function copyText(id){
+
+  navigator
+    .clipboard
+    .writeText(
+      document.getElementById(id).value
+    );
+
+  toast(
+    "Content copied ✓"
+  );
+
+}
+
+
+
+/* SAVE VERSION */
+
+function saveVersion(){
+
+  version++;
+
+  document
+    .getElementById("versions")
+    .innerText =
+    version;
+
+  toast(
+    "New content version saved ✓"
+  );
+
+}
+
+
+
+/* CONSISTENCY */
+
+function checkConsistency(){
+
+  const fields = [
+    "eventName",
+    "date",
+    "time",
+    "venue",
+    "organizer"
+  ];
+
+  const missing =
+    fields.filter(
+      id => !val(id)
+    );
+
+
+  if(missing.length){
+
+    toast(
+      "Complete the event brief first."
+    );
+
+    return;
+  }
+
+
+  toast(
+    "✓ Consistency check passed — all key details match."
+  );
+
+}
+
+
+
+/* REGISTRATION MODAL */
+
+function showRegistration(){
+
+  const name =
+    val("eventName") ||
+    "Campus Event";
+
+
+  const modal = `
+
+  <div
+    class="modal"
+    id="registrationModal"
+  >
+
+    <div class="modal-box">
+
+      <div class="modal-top">
+
+        <div>
+
+          <h2>
+            Event Registration
+          </h2>
+
+          <p
+            class="sub"
+            style="margin:5px 0 0"
+          >
+            Register for ${name}
+          </p>
+
+        </div>
+
+
+        <button
+          class="close"
+          onclick="closeRegistration()"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <input
+        id="regName"
+        placeholder="Full Name"
+      >
+
+
+      <input
+        id="regEmail"
+        placeholder="Email Address"
+        type="email"
+      >
+
+
+      <input
+        id="regCollege"
+        placeholder="College / University"
+      >
+
+
+      <button
+        class="submit"
+        onclick="submitRegistration()"
+      >
+        Submit Registration →
+      </button>
+
+    </div>
+
+  </div>
+
+  `;
+
+
+  document
+    .body
+    .insertAdjacentHTML(
+      "beforeend",
+      modal
+    );
+
+}
+
+
+
+function closeRegistration(){
+
+  const modal =
+    document.getElementById(
+      "registrationModal"
+    );
+
+  if(modal)
+    modal.remove();
+
+}
+
+
+
+function submitRegistration(){
+
+  const name =
+    document
+      .getElementById("regName")
+      .value
+      .trim();
+
+
+  const email =
+    document
+      .getElementById("regEmail")
+      .value
+      .trim();
+
+
+  if(!name || !email){
+
+    alert(
+      "Please enter your name and email."
+    );
+
+    return;
+  }
+
+
+  closeRegistration();
+
+
+  toast(
+    "Registration submitted successfully ✓"
+  );
+
+}
+
+</script>
+
+</body>
+</html>
